@@ -23,16 +23,18 @@ using TMPro;
 
 public class QuestionPref : MonoBehaviour
 {
+    [SerializeField] private int questionNumber;
     [SerializeField] private TextMeshProUGUI questionTxt;
     [SerializeField] private TextMeshProUGUI numATxt;
     [SerializeField] private TextMeshProUGUI numBTxt;
+    private repeatGround repeatGroundObj;
     private bool isNumA;                                    // isNumA = true (A correct), isNumA = false (B correct)
-    private float result;
-    private int nivel;                                      // ojo cambiar por la persistente
+    private int nivel = 0;                                  // ojo cambiar por la persistente
 
     void Start()
     {
-        
+        repeatGroundObj = GameObject.Find("Ground").GetComponent<repeatGround>();
+        CreateQuestion();
     }
 
     public void CreateQuestion()
@@ -40,6 +42,8 @@ public class QuestionPref : MonoBehaviour
         int firstNum;
         int secondtNum;
         int multiNumber = 1;
+        float randomResult = 0;
+        float result = 0;
 
         //ojo getlevl
         // nivel = getlvl;
@@ -80,11 +84,40 @@ public class QuestionPref : MonoBehaviour
                 break;
         }
 
+        if (Random.Range(0,2) == 0)
+            randomResult = result + Random.Range(2, 10);
+        else
+            randomResult = result - Random.Range(2, 10);
+
+        if (Random.Range(0,2) == 0)
+        {
+            isNumA = true;
+            numATxt.text = "" + result;
+            numBTxt.text = "" + randomResult;
+        }
+        else
+        {
+            isNumA = false;
+            numATxt.text = "" + randomResult;
+            numBTxt.text = "" + result;
+        }
+
     }
 
     public void GetAnswerQ(string answer)
     {
-        Debug.Log("Me ha tocado " + answer);
+        
+        if ((answer == "A" && isNumA) || (answer == "B" && !isNumA))
+        {   // ok! 
+            Debug.Log("Answer: " + answer + ", Respuesta Correcta");
+        }
+        else
+        {   //error
+            Debug.Log("fallo:  " + answer + ", Respuesta Incorrecta");
+        }
+
+        this.gameObject.SetActive(false);
+
     }
 
 }

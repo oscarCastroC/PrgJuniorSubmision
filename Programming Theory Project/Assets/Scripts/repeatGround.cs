@@ -40,7 +40,7 @@ public class repeatGround : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        MoveGround(); 
+        //MoveGround(); 
         MoveQuestions();
     }
 
@@ -59,26 +59,28 @@ public class repeatGround : MonoBehaviour
         QuestionPref2.transform.Translate(Vector3.back * Time.deltaTime * speed);
         if (QuestionPref1.transform.position.z < outOfBoundsZ)
         {
-            resetQuestion(0);
+            resetQuestion(1);
         }
 
         if (QuestionPref2.transform.position.z < outOfBoundsZ)
         {
-            resetQuestion(1);
+            resetQuestion(2);
         }
     }
 
     public void resetQuestion(int questionActive)
-    {   // int questionActive: 0 - questoinPref1, 1 - QuestionPref2
-        if (questionActive == 0)
+    {   // int questionActive: 1 - questoinPref1, 2 - QuestionPref2
+        if (questionActive == 1)
         {
             QuestionPref1.transform.position = QuestionPref2Pos;
-            // ojo obtener el script del objeto y resetar la pregnta
+            QuestionPref1.transform.GetChild(0).gameObject.SetActive(true);
+            QuestionPref1.transform.GetChild(0).GetComponent<QuestionPref>().CreateQuestion();
         }
         else
         {
             QuestionPref2.transform.position = QuestionPref2Pos;
-            // ojo obtener el script del objeto y resetar la pregnta
+            QuestionPref2.transform.GetChild(0).gameObject.SetActive(true);
+            QuestionPref2.transform.GetChild(0).GetComponent<QuestionPref>().CreateQuestion();
         }
     }
 
