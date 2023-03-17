@@ -104,20 +104,20 @@ public class QuestionPref : MonoBehaviour
 
     }
 
-    public void GetAnswerQ(string answer)
+    public bool GetAnswerQ(string answer)
     {
-        
+        bool isCorrect = false;
         if ((answer == "A" && isNumA) || (answer == "B" && !isNumA))
         {   // ok! 
-            Debug.Log("Answer: " + answer + ", Respuesta Correcta");
+            isCorrect = true;
         }
         else
         {   //error
-            Debug.Log("fallo:  " + answer + ", Respuesta Incorrecta");
+            
         }
 
         this.gameObject.SetActive(false);
-
+        return isCorrect;
     }
 
 }

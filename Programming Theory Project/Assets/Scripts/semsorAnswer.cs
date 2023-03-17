@@ -10,7 +10,7 @@ public class semsorAnswer : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            this.transform.parent.gameObject.GetComponent<QuestionPref>().GetAnswerQ(sensorName);
+            other.GetComponent<PlayerBehaviour>().setSoldiers(this.transform.parent.gameObject.GetComponent<QuestionPref>().GetAnswerQ(sensorName));
         }
     }
 }
