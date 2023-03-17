@@ -13,7 +13,7 @@ using TMPro;
 //********                                                                                                                                              ********//
 //**************************************************************************************************************************************************************//
 //**************************************************************************************************************************************************************//
-//********                     Creator: Oscar Castronuño                       Date: 03-16-2023                                                         ********//
+//********                     Creator: Oscar Castronuño                       Date: 03-17-2023                                                         ********//
 //**************************************************************************************************************************************************************//
 //**************************************************************************************************************************************************************//
 //**    MODIFICATION    DATE            NAME        DESCRIPTION                                                                                                 //
@@ -21,117 +21,79 @@ using TMPro;
 //**       + xx         xx-xx-xxxx      OSCAR.CC    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX      //
 //**************************************************************************************************************************************************************//
 
-public class PlayerBehaviour : MonoBehaviour
+public class EnemyControler : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI txtLives;
-    [SerializeField] private int livesPlayer = 1;
-    [SerializeField] private GameObject minion;
- 
-    private int outOfBoundDownZ = -175;
-    private int outOfBoundTopZ = -110;
-    private int outOfBoundHoriX =23;
+    [SerializeField] private int enemyPower = 1;
+    [SerializeField] private int speed = 33;
 
-    private Rigidbody playerRb;
-    private float horizontalInput;
-    private float verticalInput;
-    private float speed = 35;
+    private Rigidbody enemyRb;
+    private GameObject playerTarget;
+    private GameObject targetFormation;
+    private GameObject targetMinion = null;
+    private Vector3 movement;
 
     // Start is called before the first frame update
     void Start()
     {
-        changeLive(0);
-        playerRb = GetComponent<Rigidbody>();
+        enemyRb = GetComponent<Rigidbody>();
+        playerTarget = GameObject.Find("Player");
+        targetFormation = playerTarget.transform.GetChild(1).gameObject;
+
+        UpdateTxtLives();
     }
 
     // Update is called once per frame
     void Update()
     {
-        MovePlayer();
-        CheckOutofBounds();
-    }
-
-    private void CheckOutofBounds()
-    {
-        if (transform.position.z < outOfBoundDownZ || transform.position.z > outOfBoundTopZ)
-            transform.Translate(Vector3.forward * Time.deltaTime * speed * -verticalInput);
-
-        if (livesPlayer > 12)
+        if (targetMinion != null)
         {
-            outOfBoundHoriX = 17;
-        }
-        else if (livesPlayer > 1)
-        {
-            outOfBoundHoriX = 19;
+            CalcMovement();
         }
         else
-        {
-            outOfBoundHoriX = 23;
+        {   // find new target
+            FindTarget();
         }
-
-        if (transform.position.x > outOfBoundHoriX || transform.position.x < -outOfBoundHoriX)
-            transform.Translate(Vector3.right * Time.deltaTime * speed * -horizontalInput);
     }
 
-    // Moves the player based on arrow/asdw key input
-    private void MovePlayer()
+    void FixedUpdate()
     {
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
-
-        transform.Translate(Vector3.forward * Time.deltaTime * speed * verticalInput);
-        transform.Translate(Vector3.right * Time.deltaTime * speed * horizontalInput);
-        //layerRb.AddForce(Vector3.forward * speed * verticalInput);
-        //playerRb.AddForce(Vector3.right * speed * horizontalInput);
+        moveEnemy();
     }
 
-   public void changeLive(int num)
+    private void moveEnemy()
     {
-        livesPlayer = livesPlayer + num;
-        SumonMinion();
-        UpdateTxtLives();
+        enemyRb.MovePosition(enemyRb.position + movement * speed * Time.deltaTime);
+    }
+
+    private void CalcMovement()
+    {
+        if (transform.position.x - targetMinion.transform.position.x > 2)
+            movement.x = -1;
+        else if (transform.position.x - targetMinion.transform.position.x < -2)
+            movement.x = 1;
+        else
+            movement.x = 0;
+
+        if (transform.position.z - targetMinion.transform.position.z > 2)
+            movement.z = -1;
+        else if (transform.position.z - targetMinion.transform.position.z < -2)
+            movement.z = 1;
+        else
+            movement.z = 0;
+
+        movement.y = transform.position.y;
+    }
+
+    private void FindTarget()
+    {
+        int randomChild = Random.Range(0, playerTarget.GetComponent<PlayerBehaviour>().GetLivesPlayer());
+        targetMinion = targetFormation.transform.GetChild(randomChild).gameObject;
     }
 
     private void UpdateTxtLives()
     {
-        txtLives.text = "" + livesPlayer;
-    }
-
-    private void SumonMinion()
-    {
-        GameObject formation = transform.GetChild(1).gameObject;    // 0 canvas, 1 formation
-
-        if (livesPlayer < 25)
-        {
-            for (int x = 0; x < formation.transform.childCount; x++)
-            {
-                if (x < livesPlayer)
-                {
-                    formation.transform.GetChild(x).gameObject.SetActive(true);
-                }
-                else
-                {
-                    formation.transform.GetChild(x).gameObject.SetActive(false);
-                }
-            }
-        }
-
-    }
-
-    public void setSoldiers(bool answerCorrect)
-    {
-        if (answerCorrect)
-        {
-            changeLive(10);
-        }
-        else
-        {
-            changeLive(-1);
-        }
-    }
-
-    public int GetLivesPlayer()
-    {
-        return livesPlayer;
+        txtLives.text = "" + enemyPower;
     }
 
 }
