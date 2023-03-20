@@ -89,6 +89,13 @@ public class PlayerBehaviour : MonoBehaviour
         livesPlayer = livesPlayer + num;
         SumonMinion();
         UpdateTxtLives();
+
+        if (livesPlayer <= 0)
+        {
+            Time.timeScale = 0f;
+            GameObject.Find("scene").GetComponent<MenuControler>().activeLose();
+        }
+
     }
 
     private void UpdateTxtLives()

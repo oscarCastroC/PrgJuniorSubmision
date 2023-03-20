@@ -103,7 +103,7 @@ public class EnemyControler : MonoBehaviour
             if (isBoss)
             {
                 GameManager.Instance.NextLvlMap();
-                GameObject.Find("finishGame").gameObject.SetActive(true);
+                GameObject.Find("scene").GetComponent<MenuControler>().activeWin();
             }
 
         }

@@ -26,6 +26,8 @@ public class MenuControler : MonoBehaviour
     public GameObject p_Menu;
     public GameObject p_Settings;
     public GameObject p_Hall;
+    public GameObject p_win;
+    public GameObject p_isLose;
 
     public void SetMenuActive()
     {
@@ -42,13 +44,25 @@ public class MenuControler : MonoBehaviour
         ActiveMenus(false, false, true);
     }
 
+    public void activeLose()
+    {
+        ActiveMenusLose(false, true);
+    }
+
+    public void activeWin()
+    {
+        ActiveMenusLose(true, false);
+    }
+
     public void GoToGame()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(1); // game
     }
 
     public void GoToMenu()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(0); // Menu
     }
 
@@ -57,6 +71,14 @@ public class MenuControler : MonoBehaviour
         p_Menu.gameObject.SetActive(menuB);
         p_Settings.gameObject.SetActive(settingsB);
         p_Hall.gameObject.SetActive(hallB);
+
+        updateTextLanguage();
+    }
+
+    private void ActiveMenusLose(bool isWin, bool isLose)
+    {
+        p_win.gameObject.SetActive(isWin);
+        p_isLose.gameObject.SetActive(isLose);
 
         updateTextLanguage();
     }

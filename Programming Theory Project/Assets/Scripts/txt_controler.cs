@@ -81,6 +81,22 @@ public class txt_controler : MonoBehaviour
                 txt_text[0] = "Congratulations";
                 txt_text[1] = "Felicidades";
                 break;
+            case "txt_Lose":
+                txt_text[0] = "Try again";
+                txt_text[1] = "Intentalo de nuevo";
+                break;
+            case "txt_retry":
+                txt_text[0] = "Retry";
+                txt_text[1] = "Reintentar";
+                break;
+            case "txt_menu":
+                txt_text[0] = "Menu";
+                txt_text[1] = "Menu";
+                break;
+            case "txt_nextLvl":
+                txt_text[0] = "Next Level";
+                txt_text[1] = "Siguiente Nivel";
+                break;
         } // end switch(txtname)
 
         text_object = GameObject.Find(txtname);                             // we find the item textmesh
