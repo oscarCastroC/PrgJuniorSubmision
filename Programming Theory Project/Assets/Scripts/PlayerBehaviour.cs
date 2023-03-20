@@ -80,7 +80,7 @@ public class PlayerBehaviour : MonoBehaviour
 
         transform.Translate(Vector3.forward * Time.deltaTime * speed * verticalInput);
         transform.Translate(Vector3.right * Time.deltaTime * speed * horizontalInput);
-        //layerRb.AddForce(Vector3.forward * speed * verticalInput);
+        //playerRb.AddForce(Vector3.forward * speed * verticalInput);
         //playerRb.AddForce(Vector3.right * speed * horizontalInput);
     }
 
@@ -117,15 +117,15 @@ public class PlayerBehaviour : MonoBehaviour
 
     }
 
-    public void setSoldiers(bool answerCorrect)
+    public void setSoldiers(bool answerCorrect, int damage)
     {
         if (answerCorrect)
         {
-            changeLive(10);
+            changeLive(15);
         }
         else
         {
-            changeLive(-1);
+            changeLive(damage);
         }
     }
 

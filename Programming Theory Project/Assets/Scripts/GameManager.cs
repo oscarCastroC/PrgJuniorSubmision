@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
+using System.IO;
 
 //**************************************************************************************************************************************************************//
 //********                                                                                                                                              ********//
@@ -13,7 +13,7 @@ using TMPro;
 //********                                                                                                                                              ********//
 //**************************************************************************************************************************************************************//
 //**************************************************************************************************************************************************************//
-//********                     Creator: Oscar Castronuño                       Date: 03-17-2023                                                         ********//
+//********                     Creator: Oscar Castronuño                       Date: 03-19-2023                                                         ********//
 //**************************************************************************************************************************************************************//
 //**************************************************************************************************************************************************************//
 //**    MODIFICATION    DATE            NAME        DESCRIPTION                                                                                                 //
@@ -21,93 +21,83 @@ using TMPro;
 //**       + xx         xx-xx-xxxx      OSCAR.CC    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX      //
 //**************************************************************************************************************************************************************//
 
-public class EnemyControler : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI txtLives;
-    [SerializeField] private int enemyPower = 1;
-    public float speed = 33;
+    public static GameManager Instance { get; private set; }
+    public int currentLevel;
+    public float speedMap;
+    public string languageGame;
+    public int qualityIndex;
+    public float gameVolume;
+    public float gameBrightness;
 
-    public Rigidbody enemyRb;
-    private GameObject playerTarget;
-    public Vector3 movement;
-    private bool isBoss = false;
-
-    // Start is called before the first frame update
-    void Start()
+    [System.Serializable]
+    class SaveData
     {
-        speed = GameManager.Instance.speedMap;
-        enemyRb = GetComponent<Rigidbody>();
-        playerTarget = GameObject.Find("Player");
-
-        UpdateTxtLives();
+        public int currentLevel;
+        public float speedMap;
+        public string languageGame;
+        public int qualityIndex;
+        public float gameVolume;
+        public float gameBrightness;
     }
 
-    public void SetEnemyPower(int power, bool isBossIn)
-    {
-        enemyPower = power;
-        if (isBossIn)
-            transform.localScale = transform.localScale * 3;
+    void Awake()
+    {   // This code enables you to access the MainManager object from any other script.  
 
-        isBoss = isBossIn;
-
-        UpdateTxtLives();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        CalcMovement();
-    }
-
-    void FixedUpdate()
-    {
-        moveEnemy();
-    }
-
-    private void moveEnemy()
-    {
-        enemyRb.MovePosition(enemyRb.position + movement * speed * Time.deltaTime);
-    }
-
-    private void CalcMovement()
-    {
-        if (transform.position.x - playerTarget.transform.position.x > 2)
-            movement.x = -1;
-        else if (transform.position.x - playerTarget.transform.position.x < -2)
-            movement.x = 1;
-        else
-            movement.x = 0;
-
-        if (transform.position.z - playerTarget.transform.position.z > 2)
-            movement.z = -1;
-        else if (transform.position.z - playerTarget.transform.position.z < -2)
-            movement.z = 1;
-        else
-            movement.z = 0;
-
-        movement.y = transform.position.y;
-    }
-
-    private void UpdateTxtLives()
-    {
-        txtLives.text = "" + enemyPower;
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("PlayerMinion"))
-        {
-            playerTarget.gameObject.GetComponent<PlayerBehaviour>().setSoldiers(false, -enemyPower);
+        if (Instance != null)
+        {   // start of new code
             Destroy(gameObject);
+            return;
+        }   // end of new code
 
-            if (isBoss)
-            {
-                GameManager.Instance.NextLvlMap();
-                GameObject.Find("finishGame").gameObject.SetActive(true);
-            }
+        // You can now call MainManager.Instance from any other script 
+        Instance = this;
+        // marks the MainManager GameObject attached to this script not to be destroyed when the scene changes
+        DontDestroyOnLoad(gameObject);
 
+        //SaveAllData();
+
+        LoadAllData();
+
+    }
+
+    public void SaveAllData()
+    {
+        SaveData data = new SaveData();
+        data.currentLevel = currentLevel;
+        data.speedMap = speedMap;
+        data.languageGame = languageGame;
+        data.qualityIndex = qualityIndex;
+        data.gameVolume = gameVolume;
+        data.gameBrightness = gameBrightness;
+
+        string json = JsonUtility.ToJson(data);
+
+        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
+    }
+
+    public void LoadAllData()
+    {
+        string path = Application.persistentDataPath + "/savefile.json";
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+            currentLevel = data.currentLevel;
+            speedMap = data.speedMap;
+            languageGame = data.languageGame;
+            qualityIndex = data.qualityIndex;
+            gameVolume = data.gameVolume;
+            gameBrightness = data.gameBrightness;
         }
     }
 
-
+    public void NextLvlMap()
+    {
+        currentLevel = currentLevel + 1;
+        speedMap = speedMap + 0.5f;
+        SaveAllData();
+    }
 }

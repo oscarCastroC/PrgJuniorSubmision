@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
+using UnityEngine.SceneManagement;
 
 //**************************************************************************************************************************************************************//
 //********                                                                                                                                              ********//
@@ -13,7 +13,7 @@ using TMPro;
 //********                                                                                                                                              ********//
 //**************************************************************************************************************************************************************//
 //**************************************************************************************************************************************************************//
-//********                     Creator: Oscar Castronuño                       Date: 03-17-2023                                                         ********//
+//********                     Creator: Oscar Castronuño                       Date: 03-19-2023                                                         ********//
 //**************************************************************************************************************************************************************//
 //**************************************************************************************************************************************************************//
 //**    MODIFICATION    DATE            NAME        DESCRIPTION                                                                                                 //
@@ -21,93 +21,55 @@ using TMPro;
 //**       + xx         xx-xx-xxxx      OSCAR.CC    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX      //
 //**************************************************************************************************************************************************************//
 
-public class EnemyControler : MonoBehaviour
+public class MenuControler : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI txtLives;
-    [SerializeField] private int enemyPower = 1;
-    public float speed = 33;
+    public GameObject p_Menu;
+    public GameObject p_Settings;
+    public GameObject p_Hall;
 
-    public Rigidbody enemyRb;
-    private GameObject playerTarget;
-    public Vector3 movement;
-    private bool isBoss = false;
-
-    // Start is called before the first frame update
-    void Start()
+    public void SetMenuActive()
     {
-        speed = GameManager.Instance.speedMap;
-        enemyRb = GetComponent<Rigidbody>();
-        playerTarget = GameObject.Find("Player");
-
-        UpdateTxtLives();
+        ActiveMenus(true, false, false);
     }
 
-    public void SetEnemyPower(int power, bool isBossIn)
+    public void SetSettingsActive()
     {
-        enemyPower = power;
-        if (isBossIn)
-            transform.localScale = transform.localScale * 3;
-
-        isBoss = isBossIn;
-
-        UpdateTxtLives();
+        ActiveMenus(false, true, false);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetHallsActive()
     {
-        CalcMovement();
+        ActiveMenus(false, false, true);
     }
 
-    void FixedUpdate()
+    public void GoToGame()
     {
-        moveEnemy();
+        SceneManager.LoadScene(1); // game
     }
 
-    private void moveEnemy()
+    public void GoToMenu()
     {
-        enemyRb.MovePosition(enemyRb.position + movement * speed * Time.deltaTime);
+        SceneManager.LoadScene(0); // Menu
     }
 
-    private void CalcMovement()
+    private void ActiveMenus(bool menuB, bool settingsB, bool hallB)
     {
-        if (transform.position.x - playerTarget.transform.position.x > 2)
-            movement.x = -1;
-        else if (transform.position.x - playerTarget.transform.position.x < -2)
-            movement.x = 1;
-        else
-            movement.x = 0;
+        p_Menu.gameObject.SetActive(menuB);
+        p_Settings.gameObject.SetActive(settingsB);
+        p_Hall.gameObject.SetActive(hallB);
 
-        if (transform.position.z - playerTarget.transform.position.z > 2)
-            movement.z = -1;
-        else if (transform.position.z - playerTarget.transform.position.z < -2)
-            movement.z = 1;
-        else
-            movement.z = 0;
-
-        movement.y = transform.position.y;
+        updateTextLanguage();
     }
 
-    private void UpdateTxtLives()
+    public void updateTextLanguage()
     {
-        txtLives.text = "" + enemyPower;
-    }
+        GameObject[] allTxt;
+        allTxt = GameObject.FindGameObjectsWithTag("textTag");
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("PlayerMinion"))
+        foreach (GameObject currentText in allTxt)
         {
-            playerTarget.gameObject.GetComponent<PlayerBehaviour>().setSoldiers(false, -enemyPower);
-            Destroy(gameObject);
-
-            if (isBoss)
-            {
-                GameManager.Instance.NextLvlMap();
-                GameObject.Find("finishGame").gameObject.SetActive(true);
-            }
-
+            //Debug.Log("currentText: " + currentText.gameObject.name);
+            currentText.GetComponent<txt_controler>().chosseLanguage();
         }
     }
-
-
 }

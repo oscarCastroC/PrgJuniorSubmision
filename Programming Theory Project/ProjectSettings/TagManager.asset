@@ -6,6 +6,7 @@ TagManager:
   tags:
   - EnemyTag
   - PlayerMinion
+  - textTag
   layers:
   - Default
   - TransparentFX

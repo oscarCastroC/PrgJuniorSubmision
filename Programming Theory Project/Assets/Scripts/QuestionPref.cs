@@ -47,12 +47,14 @@ public class QuestionPref : MonoBehaviour
 
         //ojo getlevl
         // nivel = getlvl;
+        nivel = GameManager.Instance.currentLevel;
+
         while (nivel > 4)
         {   // 0: +, 1: -, 2: *, 3:/, 4: all
             if (nivel > 10)
             {
                 nivel = nivel - 10;
-                multiNumber = multiNumber + 20;
+                multiNumber = multiNumber + 3;
             }
             else
                 nivel = nivel - 5;
@@ -61,8 +63,17 @@ public class QuestionPref : MonoBehaviour
         if (nivel == 4)
             nivel = Random.Range(0, 4);
 
-        firstNum = Random.Range(-100, 101) * multiNumber;
-        secondtNum = Random.Range(-100, 101) * multiNumber;
+        if (GameManager.Instance.currentLevel > 15)
+        {
+            firstNum = Random.Range(-100, 101) * multiNumber;
+            secondtNum = Random.Range(-100, 101) * multiNumber;
+        }
+        else
+        {
+            firstNum = Random.Range(0, 10 * multiNumber);
+            secondtNum = Random.Range(0, 10 * multiNumber);
+        }
+        
 
         switch (nivel)
         {

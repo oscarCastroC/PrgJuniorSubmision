@@ -23,12 +23,13 @@ using UnityEngine;
 public class semsorAnswer : MonoBehaviour
 {
     [SerializeField] private string sensorName;
+    private int damage = -1;
 
     public void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            other.GetComponent<PlayerBehaviour>().setSoldiers(this.transform.parent.gameObject.GetComponent<QuestionPref>().GetAnswerQ(sensorName));
+            other.GetComponent<PlayerBehaviour>().setSoldiers(this.transform.parent.gameObject.GetComponent<QuestionPref>().GetAnswerQ(sensorName), damage);
         }
     }
 }
